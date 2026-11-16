@@ -132,6 +132,40 @@ cd md3-calendar
 
 ---
 
+## 维护：每年补一次调休数据
+
+`app/src/main/java/cn/sangsheng/calendar/lunar/OfficialHolidays.kt` 里有**两张表**，
+每年 11 月国务院办公厅公布次年安排后，照抄进去就行——不用自己算日期（你也算不过它）。
+
+```kotlin
+private val SPANS: List<Span> = listOf(
+    // 2026 年
+    Span("元旦", LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 3)),
+    Span("春节", LocalDate.of(2026, 2, 15), LocalDate.of(2026, 2, 23)),
+    // ……次年新增的段直接往下加
+)
+
+private val MAKEUP_WORKDAYS: Set<LocalDate> = setOf(
+    // 2026 年
+    LocalDate.of(2026, 1, 4),    // 元旦调休
+    LocalDate.of(2026, 2, 14),   // 春节调休
+    // ……次年新增的日期直接往下加
+)
+```
+
+- **`SPANS`** 填「每段假期的名称 + 起止日」。连休几天就写从第一天到最后一天（春节 9 天就写 2/15 到 2/23）。
+- **`MAKEUP_WORKDAYS`** 填「**周末被调去上班的那几天**」。是零散的几天，不是区间——这些日子在月历上会显示红色的「班」。
+
+通知原文一般是这么写的：
+
+> 一、元旦：1月1日（周四）至3日（周六）放假调休，共3天。**1月4日（周日）上班**。
+
+翻译成代码就是：`Span("元旦", 1月1日, 1月3日)`，再往 `MAKEUP_WORKDAYS` 里加 `1月4日`。
+
+数据源：[中国政府网](https://www.gov.cn/) 每年 11 月前后发布的《国务院办公厅关于××××年部分节假日安排的通知》。
+
+---
+
 ## 致谢
 
 - [lunar-java](https://github.com/6tail/lunar-java) —— 农历、节气、干支、传统节日的数据和算法全靠它
