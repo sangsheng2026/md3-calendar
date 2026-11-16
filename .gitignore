@@ -30,3 +30,9 @@ Thumbs.db
 
 # 日志
 *.log
+
+# 签名材料（绝不能提交）
+keystore.properties
+*.jks
+*.keystore
+keystore/
